@@ -1,6 +1,7 @@
-use std::{env, vec};
+use std::env;
 
-use rand::{/*prelude::IteratorRandom, */ thread_rng, Rng};
+use rand::{prelude::IteratorRandom, thread_rng};
+// use rand::{thread_rng, Rng};
 
 struct Lotto {
     take: usize,
@@ -11,16 +12,21 @@ struct Lotto {
 impl Lotto {
     fn new(take: usize, from: usize) -> Self {
         // todo!("Implement")
-        let mut rng = thread_rng();
-        let mut numbers: Vec<usize> = vec![];
-        let mut random_number: usize;
 
-        while numbers.len() <= take {
-            random_number = rng.gen_range(1..=from);
-            if !numbers.contains(&random_number) {
-                numbers.push(random_number);
-            }
-        }
+        // did not work with the tests, but gives good results:
+        // let mut rng = thread_rng();
+        // let mut numbers: Vec<usize> = vec![];
+        // let mut random_number: usize;
+
+        // while numbers.len() <= take {
+        //     random_number = rng.gen_range(1..=from);
+        //     if !numbers.contains(&random_number) {
+        //         numbers.push(random_number);
+        //     }
+        // }
+
+        let mut rng = thread_rng();
+        let numbers: Vec<usize> = (1..=from).choose_multiple(&mut rng, take).clone();
 
         return Self {
             take,
@@ -30,16 +36,17 @@ impl Lotto {
     }
 
     fn get_numbers(&self) -> Vec<usize> {
-        // self
         // todo!("Implement")
         self.numbers.clone()
+        // with self instead of &self:
+        // return self.numbers;
     }
 }
 
 fn format_lotto_results(lotto: &Lotto) -> String {
     // Tip: Use the format macro
     let msg = format!(
-        "Lotto {} aus {}: {:?}",
+        "{} of {}: {:?}",
         lotto.take,
         lotto.from,
         lotto.get_numbers()
@@ -49,11 +56,10 @@ fn format_lotto_results(lotto: &Lotto) -> String {
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    // TODO soll mehrere auch erlauben %2=0 -> for loop um main()
+    // todo!("Implement CLI")
     let args_len = args.len();
     if args_len >= 3 && (args_len % 2) == 1 {
-        for i in (1..=args_len).step_by(2) {
-            // todo!("Implement CLI")
+        for i in (1..args_len).step_by(2) {
             let arg1: usize = args[i].parse().expect("Could not parse number of takes");
             let arg2: usize = args[i + 1]
                 .parse()
